@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Pentest Login</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{
+background:#020617;
+color:white;
+}
+.card{
+background:#0f172a;
+padding:20px;
+border-radius:10px;
+}
+.form-control {
+background:#1e293b;
+border:1px solid #334155;
+color:white;
+}
+.btn {
+background:#dc2626;
+border:none;
+}
+.btn:hover {
+background:#b91c1c;
+}
+</style>
+</head>
+<body>
+<div class="container mt-5">
+<div class="row justify-content-center">
+<div class="col-md-4">
+<div class="card">
+<h3 class="text-center mb-4">🔐 Scan Bot Login</h3>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-danger text-center">{{ messages[0] }}</div>
+  {% endif %}
+{% endwith %}
+<form method="post">
+<input name="username" class="form-control mb-3" placeholder="Username" required>
+<input name="password" type="password" class="form-control mb-3" placeholder="Password" required>
+<button class="btn btn-danger w-100">Login</button>
+</form>
+<p class="text-center mt-3"><a href="/register" style="color:#60a5fa;">Don't have an account? Register</a></p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
