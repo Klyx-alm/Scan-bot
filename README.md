@@ -1,4 +1,4 @@
-# 🚀 ScanBot
+# 🚀 ScanBot (Version Mac dispo pour le moment)
 
 ScanBot est un outil de cybersécurité permettant d'analyser des machines via leur adresse IP avec une interface web moderne et un assistant IA intégré.
 
@@ -19,7 +19,12 @@ sudo ./ScanBot
 Windows:
 Run Scanbot as Administrator in terminal
 
-## ⚙️ Installation
+## Téléchargement
+Aller sur le https://github.com/Klyx-alm/Scan-bot/releases 
+puis télécharger le fichier ScanBot.zip 
+Décompresser le puis cliquer sur l'app sans passer à la phase installation en bas
+
+## ⚙️ Installation (Autres méthodes)
 
 ```bash
 git clone https://github.com/Klyx-alm/scanbot.git
