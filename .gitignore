@@ -1,6 +1,8 @@
 venv/
 __pycache__/
-build/
+*.pyc
 dist/
+build/
 *.spec
+scanbot_users.json
 .env

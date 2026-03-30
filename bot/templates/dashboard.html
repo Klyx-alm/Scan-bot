@@ -1,14 +1,10 @@
-
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <title>Scan Bot Dashboard</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
 
 <style>
 
@@ -25,35 +21,29 @@ background: #f8fafc;
 color: #1e293b;
 }
 
+/* ===== SCROLL ===== */
+html, body {
+height: 100%;
+overflow: auto;
+}
+
 /* ===== SIDEBAR ===== */
 .sidebar{
 background: linear-gradient(180deg,#0f172a,#020617);
 height:100vh;
 padding:20px;
 border-right:1px solid #1e293b;
+overflow-y:auto;
 }
 
-body.light .sidebar {
-background: #e2e8f0;
-border-right:1px solid #cbd5e1;
-}
-
-/* ===== SECTIONS ===== */
+/* ===== RESULTS ===== */
 .results {
 padding:20px;
 height: 100vh;
 overflow-y: auto;
 }
 
-.results::-webkit-scrollbar {
-width: 6px;
-}
-
-.results::-webkit-scrollbar-thumb {
-background: #22c55e;
-border-radius: 10px;
-}
-
+/* ===== CHAT COLUMN ===== */
 .chat-col {
 height: 100vh;
 display: flex;
@@ -63,82 +53,30 @@ flex-direction: column;
 /* ===== CHAT ===== */
 .chatbox{
 flex: 1;
-height:420px;
 overflow:auto;
 background:#020617;
 padding:15px;
 border:1px solid #334155;
 border-radius:12px;
-box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
 
-body.light .chatbox {
-background: #f1f5f9;
-color: #1e293b;
-}
-
-/* ===== TERMINAL ===== */
-.terminal{
-background:#000;
-color:#00ff9c;
-padding:15px;
-font-family:monospace;
-white-space:pre-wrap;
-border-radius:12px;
-border:1px solid #064e3b;
-box-shadow: 0 0 10px rgba(0,255,150,0.2);
-transition: 0.3s;
-}
-
-.terminal:hover {
-box-shadow: 0 0 20px rgba(0,255,150,0.5);
-}
-
-body.light .terminal {
-background: #f8fafc;
-color: #1e293b;
-border:1px solid #cbd5e1;
-}
-
-/* ===== BUTTONS ===== */
-.btn {
+/* ===== BUTTON STYLE (🔥 HOVER LIFT EFFECT) ===== */
+button, .btn {
 transition: all 0.25s ease;
-border-radius:8px;
+position: relative;
 }
 
-.btn:hover {
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+button:hover, .btn:hover {
+transform: translateY(-4px) scale(1.03);
+box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
-/* couleurs custom */
-.btn-primary { background:#2563eb; border:none; }
-.btn-warning { background:#f59e0b; border:none; }
-.btn-info { background:#0ea5e9; border:none; }
-.btn-danger { background:#dc2626; border:none; }
-.btn-success { background:#16a34a; border:none; }
-
-/* ===== INPUT ===== */
-input.form-control {
-background:#020617;
-border:1px solid #334155;
-color:white;
-border-radius:8px;
-}
-
-input.form-control::placeholder {
-color:#64748b;
-}
-
-input.form-control:focus {
-border-color:#22c55e;
-box-shadow:0 0 5px #22c55e;
-}
-
-body.light input.form-control {
-background:#fff;
-color:#000;
-}
+/* Glow color selon type */
+.btn-primary:hover { box-shadow: 0 0 15px #3b82f6; }
+.btn-warning:hover { box-shadow: 0 0 15px #facc15; }
+.btn-danger:hover { box-shadow: 0 0 15px #ef4444; }
+.btn-info:hover { box-shadow: 0 0 15px #38bdf8; }
+.btn-success:hover { box-shadow: 0 0 15px #22c55e; }
 
 /* ===== THEME BUTTON ===== */
 .theme-toggle {
@@ -158,74 +96,96 @@ transition: all 0.3s ease;
 }
 
 .theme-toggle:hover {
-transform: scale(1.1) rotate(10deg);
-box-shadow: 0 6px 18px rgba(220, 38, 38, 0.6);
+transform: scale(1.15) rotate(10deg);
+box-shadow: 0 0 20px #ff0000;
 }
 
-/* ===== TITLES ===== */
-h4, h5, h6 {
-font-weight:600;
+/* ===== TERMINAL (🔥 HACKING STYLE) ===== */
+.terminal{
+background:#000;
+color:#00ff9c;
+padding:15px;
+font-family:monospace;
+white-space:pre-wrap;
+border-radius:12px;
+border:1px solid #064e3b;
+position: relative;
+transition: all 0.3s ease;
+overflow:hidden;
 }
 
-/* ===== SCROLLBAR ===== */
-.chatbox::-webkit-scrollbar {
-width: 6px;
-}
-.chatbox::-webkit-scrollbar-thumb {
-background: #22c55e;
-border-radius: 10px;
+/* Neon border effect */
+.terminal::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:12px;
+padding:1px;
+background: linear-gradient(120deg, transparent, #00ff9c, transparent);
+-webkit-mask:
+linear-gradient(#000 0 0) content-box,
+linear-gradient(#000 0 0);
+-webkit-mask-composite: xor;
+mask-composite: exclude;
+opacity:0;
+transition:0.3s;
 }
 
-/* ===== HISTORY ===== */
-ul li {
-opacity: 0.7;
-transition: 0.2s;
+/* Hover effect hacking */
+.terminal:hover{
+transform: translateY(-5px) scale(1.01);
+box-shadow: 0 0 25px rgba(0,255,156,0.3);
+border-color:#00ff9c;
 }
-ul li:hover {
-opacity: 1;
-color:#22c55e;
-cursor:pointer;
+
+.terminal:hover::before{
+opacity:1;
+}
+
+/* Scan line animation */
+.terminal::after{
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:2px;
+background:#00ff9c;
+animation: scanline 3s linear infinite;
+opacity:0.3;
+}
+
+@keyframes scanline{
+0%{ top:0 }
+100%{ top:100% }
+}
+
+/* ===== INPUT ===== */
+input.form-control {
+background:#020617;
+border:1px solid #334155;
+color:white;
+transition:0.3s;
+}
+
+input.form-control:focus {
+border-color:#22c55e;
+box-shadow:0 0 10px #22c55e;
+background:#020617;
+color:white;
 }
 
 /* ===== FOOTER ===== */
 footer {
 opacity:0.6;
+margin-top:10px;
 }
-
-/* ===== ANIMATION ===== */
-@keyframes glow {
-0% { box-shadow: 0 0 5px #22c55e; }
-50% { box-shadow: 0 0 20px #22c55e; }
-100% { box-shadow: 0 0 5px #22c55e; }
-}
-
-.btn-success:hover {
-animation: glow 1s infinite;
-}
-
-/* ===== LAYOUT HEIGHT ===== */
-html, body {
-height: 100%;
-overflow: hidden;
-}
-
-.container-fluid,
-.row {
-height: 100%;
-}
-
-.sidebar {
-overflow-y: auto;
-}
-
-
 </style>
 </head>
 
 <body class="{{ 'light' if theme == 'light' else 'dark' }}">
 
 <div class="container-fluid">
-
 <div class="row">
 
 <!-- SIDEBAR -->
@@ -233,7 +193,6 @@ overflow-y: auto;
 
 <h4>⚡ Scan Bot</h4>
 
-<!-- HISTORY -->
 <div class="mb-4">
 <h6>📜 Scan History</h6>
 <ul class="list-unstyled">
@@ -245,37 +204,31 @@ overflow-y: auto;
 
 <form method="post" action="/scan">
 <input name="ip" class="form-control mb-2" placeholder="Target IP" required>
-<button class="btn btn-primary btn-sm mb-2"><i class="fas fa-search"></i> Quick Scan</button>
+<button class="btn btn-primary btn-sm mb-2">Quick Scan</button>
 </form>
 
 <form method="post" action="/deep">
 <input name="ip" class="form-control mb-2" placeholder="Target IP" required>
-<button class="btn btn-warning btn-sm mb-2"><i class="fas fa-search-plus"></i> Deep Scan</button>
+<button class="btn btn-warning btn-sm mb-2">Deep Scan</button>
 </form>
 
 <form method="post" action="/os">
 <input name="ip" class="form-control mb-2" placeholder="Target IP" required>
-<button class="btn btn-info btn-sm mb-2"><i class="fas fa-cogs"></i> Detect OS</button>
+<button class="btn btn-info btn-sm mb-2">Detect OS</button>
 </form>
 
 <form method="post" action="/analyze">
 <input name="ip" class="form-control mb-2" placeholder="Target IP" required>
-<button class="btn btn-danger btn-sm"><i class="fas fa-brain"></i> Analyze</button>
-</form>
-
-<form method="post" action="/nikto">
-<input name="ip" class="form-control mb-2" placeholder="Target IP" required>
-<button class="btn btn-success btn-sm mb-2"><i class="fas fa-spider"></i> Nikto Web Scan</button>
+<button class="btn btn-danger btn-sm mb-2">Analyze</button>
 </form>
 
 <form method="post" action="/gobuster">
 <input name="ip" class="form-control mb-2" placeholder="Target IP" required>
 <input name="wordlist" class="form-control mb-2" placeholder="Wordlist path" value="~/seclists/Discovery/Web-Content/common.txt">
-<button class="btn btn-warning btn-sm mb-2"><i class="fas fa-list"></i> Gobuster Dir Bust</button>
+<button class="btn btn-warning btn-sm mb-2">Gobuster</button>
 </form>
 
 <hr>
-
 <a href="/logout" class="btn btn-secondary btn-sm">Logout</a>
 
 </div>
@@ -284,14 +237,7 @@ overflow-y: auto;
 <div class="col-6 results">
 <h4>🧠 Scan Results</h4>
 
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="alert alert-info text-center">{{ messages[0] }}</div>
-  {% endif %}
-{% endwith %}
-
 {% for ip,data in scans.items() %}
-
 <div class="terminal mb-4">
 
 <b>Target:</b> {{ip}}
@@ -311,23 +257,28 @@ overflow-y: auto;
 {{data.os}}
 {% endif %}
 
+{% if data.portscan %}
+<h6>Port Scan</h6>
+{{data.portscan}}
+{% endif %}
+
+
 {% if data.analysis %}
 <h6>Analysis</h6>
 {{data.analysis}}
 {% endif %}
 
 {% if data.nikto %}
-<h6>Nikto Web Scan</h6>
+<h6>Nikto</h6>
 {{data.nikto}}
 {% endif %}
 
 {% if data.gobuster %}
-<h6>Gobuster Directory Bust</h6>
+<h6>Gobuster</h6>
 {{data.gobuster}}
 {% endif %}
 
 </div>
-
 {% endfor %}
 
 </div>
@@ -335,32 +286,51 @@ overflow-y: auto;
 <!-- CHAT -->
 <div class="col-3 chat-col">
 
-<div style="display: flex; align-items: center; margin-bottom: 10px;">
-<h4 style="margin: 0; flex: 1;">🤖 AI Chat</h4>
+<div style="display:flex;align-items:center;margin-bottom:10px;">
+<h4 style="flex:1;">🤖 AI Chat</h4>
 <button id="theme-toggle" class="theme-toggle">{{ '🌙' if theme == 'light' else '☀️' }}</button>
 </div>
 
-<div class="chatbox" id="chat">
-<div style='color:#22c55e'><b>AI:</b> {{ welcome }}</div><hr>
+<div class="chatbox" id="chat" style="min-height:300px;">
+
+<div style="color:#22c55e">
+<b>AI:</b><br><br>
+
+👋 Bienvenue sur <b>ScanBot</b><br><br>
+
+🔍 ScanBot te permet d’analyser des machines via IP.<br><br>
+
+Fonctionnalités :<br>
+• Scan rapide et profond<br>
+• Détection OS<br>
+• Scan de ports<br>
+• Analyse intelligente<br><br>
+
+⚙️ Utilisation :<br>
+1. Entre une IP<br>
+2. Lance un scan<br>
+3. Analyse<br><br>
+
+🤖 Je t’aide à comprendre et exploiter les résultats.<br>
+
+</div>
+
+<hr>
+
 </div>
 
 <input id="message" class="form-control mt-2" placeholder="Ask something">
-
 <button onclick="send()" class="btn btn-success w-100 mt-2">Send</button>
 
 </div>
 
 </div>
-
 </div>
-
 
 <script>
 
 function send(){
-
 let msg=document.getElementById("message").value
-
 if(!msg) return
 
 let chat=document.getElementById("chat")
@@ -370,35 +340,29 @@ chat.innerHTML += "<div>⏳ Thinking...</div>"
 
 fetch("/chat",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-message:msg
-})
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:msg})
 })
 .then(r=>r.json())
 .then(data=>{
-
 chat.innerHTML += "<div style='color:#22c55e'><b>AI:</b> "+data.response+"</div><hr>"
 chat.scrollTop = chat.scrollHeight
-
 })
 
 document.getElementById("message").value=""
-
 }
 
-// Theme toggle
-document.getElementById("theme-toggle").addEventListener("click", function() {
-    fetch("/toggle_theme", { method: "POST" })
-    .then(() => location.reload());
-});
+// Theme toggle 
+document.getElementById("theme-toggle")
+.addEventListener("click", function()
+{ fetch("/toggle_theme", { method: "POST" }) .then(() => location.reload()); });
+
 
 </script>
 
-<footer class="text-center mt-5" style="color:#64748b; font-size:0.9em;">
-  <p>&copy; 2026 Scan Bot - Professional Pentesting Tool | Built with Flask & AI</p>
+<footer style="text-align:center;padding:15px;">
+🚀 <b>ScanBot</b> — Cybersecurity Scanner & AI Assistant<br>
+© 2026 — All rights reserved
 </footer>
 
 </body>

@@ -1,7 +1,15 @@
 import subprocess
 import re
 import os
+import shutil
 from vulnerability import analyze_service
+
+# 🔥 FIX PATH pour PyInstaller
+os.environ["PATH"] += os.pathsep + "/opt/homebrew/bin"
+os.environ["PATH"] += os.pathsep + "/usr/local/bin"
+
+# 🔥 Détection automatique de nmap
+NMAP_PATH = shutil.which("nmap") or "/opt/homebrew/bin/nmap"
 
 # 🔥 IA (OpenAI)
 try:
@@ -20,12 +28,14 @@ class HackerBot:
             env = os.environ.copy()
             env['LANG'] = 'C'
             env['LC_ALL'] = 'C'
+
             result = subprocess.check_output(
-                ["nmap", "-F", "-sV", target],
+                [NMAP_PATH, "-F", "-sV", target],
                 stderr=subprocess.STDOUT,
                 env=env
             )
             return result.decode()
+
         except Exception as e:
             return str(e)
 
@@ -35,12 +45,14 @@ class HackerBot:
             env = os.environ.copy()
             env['LANG'] = 'C'
             env['LC_ALL'] = 'C'
+
             result = subprocess.check_output(
-                ["nmap", "-sV", "--script", "vuln", target],
+                [NMAP_PATH, "-sV", "--script", "vuln", target],
                 stderr=subprocess.STDOUT,
                 env=env
             )
             return result.decode()
+
         except Exception as e:
             return str(e)
 
@@ -50,12 +62,23 @@ class HackerBot:
             env = os.environ.copy()
             env['LANG'] = 'C'
             env['LC_ALL'] = 'C'
-            result = subprocess.check_output(
-                ["nmap", "-sV", target],
-                stderr=subprocess.STDOUT,
-                env=env
-            )
-            return result.decode()
+
+            try:
+                result = subprocess.check_output(
+                    ["sudo", NMAP_PATH, "-O", target],
+                    stderr=subprocess.STDOUT,
+                    env=env
+                )
+                return result.decode()
+
+            except:
+                result = subprocess.check_output(
+                    [NMAP_PATH, "-sV", target],
+                    stderr=subprocess.STDOUT,
+                    env=env
+                )
+                return "⚠️ OS detection needs admin (sudo)\n\nFallback scan:\n\n" + result.decode()
+
         except Exception as e:
             return str(e)
 
@@ -65,26 +88,24 @@ class HackerBot:
             env = os.environ.copy()
             env['LANG'] = 'C'
             env['LC_ALL'] = 'C'
+
             result = subprocess.check_output(
-                ["nmap", "-p-", target],
+                [NMAP_PATH, "-p-", target],
                 stderr=subprocess.STDOUT,
                 env=env
             )
             return result.decode()
+
         except Exception as e:
             return str(e)
 
     # ---------------- EXTRACTION SERVICES ----------------
     def extract_services(self, scan_output):
-
         services = []
 
         for line in scan_output.split("\n"):
-
             if "open" in line:
-
                 parts = line.split()
-
                 if len(parts) >= 3:
                     service = parts[2]
                     version = " ".join(parts[3:])
@@ -92,10 +113,10 @@ class HackerBot:
 
         return services
 
-    # ---------------- ANALYSE INTELLIGENTE ----------------
+    # ---------------- ANALYSE ----------------
     def analyze_scan(self, scan_output):
 
-        # 🔥 Si IA dispo → analyse avancée
+        # 🔥 IA
         if AI_ENABLED:
             try:
                 response = client.chat.completions.create(
@@ -103,7 +124,7 @@ class HackerBot:
                     messages=[
                         {
                             "role": "system",
-                            "content": "You are a professional penetration tester. Analyze this Nmap scan and provide: vulnerabilities, CVEs, attack vectors, and recommendations."
+                            "content": "You are a professional penetration tester. Analyze this Nmap scan and provide vulnerabilities, CVEs, attack vectors, and recommendations."
                         },
                         {
                             "role": "user",
@@ -117,16 +138,14 @@ class HackerBot:
             except Exception as e:
                 return f"AI error: {str(e)}"
 
-        # 🔥 fallback manuel (sans IA)
+        # 🔥 fallback manuel
         findings = []
 
-        # CVE détectées dans output
         cves = re.findall(r"CVE-\d{4}-\d+", scan_output)
 
         for cve in set(cves):
             findings.append(f"🚨 Found CVE: {cve}")
 
-        # Analyse services
         services = self.extract_services(scan_output)
 
         for s in services:
@@ -138,16 +157,13 @@ class HackerBot:
 
         return "\n".join(set(findings))
 
-    # ---------------- CHAT IA ----------------
+    # ---------------- CHAT ----------------
     def chat(self, message):
 
         msg = message.lower()
 
-        # 🔥 EXTRAIRE IP automatiquement
         ip_match = re.search(r"\d{1,3}(?:\.\d{1,3}){3}", msg)
         ip = ip_match.group(0) if ip_match else None
-
-        # ---------------- INTENT DETECTION ----------------
 
         # SCAN
         if any(word in msg for word in ["scan", "scanner"]):
@@ -155,94 +171,58 @@ class HackerBot:
                 return self.scan(ip)
             return "⚠️ Please provide a valid IP"
 
-        # DEEP SCAN
+        # DEEP
         if any(word in msg for word in ["deep", "approfondi"]):
             if ip:
                 return self.deep_scan(ip)
             return "⚠️ Please provide a valid IP"
 
-        # PORT SCAN
+        # PORT
         if any(word in msg for word in ["port", "ports"]):
             if ip:
                 return self.port_scan(ip)
             return "⚠️ Please provide a valid IP"
 
-        # OS DETECTION
+        # OS
         if any(word in msg for word in ["os", "system", "système"]):
             if ip:
                 return self.detect_os(ip)
             return "⚠️ Please provide a valid IP"
 
-        # ANALYSE VULN
-        if any(word in msg for word in ["analyse", "analyze", "vuln", "vulnerability"]):
-            return "👉 Run a scan first, then click 'Analyze' button for full report"
+        # ANALYSE
+        if any(word in msg for word in ["analyse", "analyze", "vuln"]):
+            return "👉 Run a scan first, then click Analyze"
 
-        # ---------------- IA MODE ----------------
-
+        # IA libre
         if AI_ENABLED:
             try:
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[
-                        {
-                            "role": "system",
-                            "content": """You are an elite penetration tester.
-
-Be professional, detailed and practical.
-
-When user asks:
-- Explain vulnerabilities
-- Suggest exploits
-- Give attack scenarios
-- Give mitigation steps
-
-Always answer like a real cybersecurity expert."""
-                        },
-                        {
-                            "role": "user",
-                            "content": message
-                        }
+                        {"role": "system", "content": "You are an elite penetration tester."},
+                        {"role": "user", "content": message}
                     ],
                     temperature=0.7
                 )
-
                 return response.choices[0].message.content
 
             except Exception as e:
                 return f"AI error: {str(e)}"
 
-        # ---------------- FALLBACK ----------------
+        return "🤖 Use commands like: scan <ip>, deep <ip>, port <ip>, os <ip>"
 
-        return """🤖 Available commands:
-- scan <ip>
-- deep <ip>
-- port <ip>
-- os <ip>
-- analyze
-
-Example:
-scan 192.168.1.1
-"""
-
+    # ---------------- WELCOME ----------------
     def get_welcome(self):
-        if AI_ENABLED:
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": "You are Scan Bot, a professional pentesting AI assistant. Welcome the user cordially, introduce yourself, describe what Scan Bot does and how to use it."
-                        },
-                        {
-                            "role": "user",
-                            "content": "Welcome message"
-                        }
-                    ],
-                    temperature=0.7
-                )
-                return response.choices[0].message.content
-            except Exception as e:
-                return "Welcome to Scan Bot! I am your AI assistant for pentesting. Scan Bot helps you perform network scans, vulnerability analysis, and directory busting. Enter an IP and use the buttons to scan, or ask me questions."
-        else:
-            return "Welcome to Scan Bot! I am your AI assistant for pentesting. Scan Bot helps you perform network scans, vulnerability analysis, and directory busting. Enter an IP and use the buttons to scan, or ask me questions."
+        return """👋 Welcome to ScanBot
+
+🔍 ScanBot helps you analyze machines via IP
+
+• Scan ports
+• Detect OS
+• Find vulnerabilities
+• Analyze results
+
+💡 Enter an IP and start scanning
+
+🤖 I help you understand and exploit results
+"""
