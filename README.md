@@ -27,7 +27,7 @@ Décompresser le puis cliquer sur l'app sans passer à la phase installation en 
 ## ⚙️ Installation (Autres méthodes)
 
 ```bash
-git clone https://github.com/Klyx-alm/scanbot.git
+git clone https://github.com/Klyx-alm/Scan-bot/archive/refs/tags/v1.0.zip
 cd scanbot
 python3 -m venv venv
 source venv/bin/activate
