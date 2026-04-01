@@ -22,23 +22,29 @@ Lancer ScanBot en tant qu’administrateur dans le terminal
 SOLUTION 1 (LA PLUS SIMPLE)
 
 ## Pour télécharger ton .zip, utilise :
-" bash
+```bash
 curl -L -o scanbot.zip https://github.com/Klyx-alm/Scan-bot/archive/refs/tags/v1.1.zip
-"
+
 Puis :
 unzip scanbot.zip
+
 cd Scan-bot-1.1
 
 SOLUTION 2 (Vraiment simple)
+
 Aller sur :
 👉 https://github.com/Klyx-alm/Scan-bot/releases
+
 Télécharger ScanBot.zip
+
 Décompresser le fichier
+
 Double-cliquer sur ScanBot (aucune installation requise)
+
 ⚙️ Installation (méthode développeur)
-
+```
 ## ⚠️ Pour les utilisateurs avancés uniquement
-
+```bash
 git clone https://github.com/Klyx-alm/Scan-bot.git
 cd Scan-bot
 
@@ -57,7 +63,7 @@ Tuer le processus
 kill -9 PID
 
 (Remplacer PID par le numéro affiché)
-
+```
 ## 🌐 Accès
 
 Une fois lancé, ouvrir dans le navigateur :
